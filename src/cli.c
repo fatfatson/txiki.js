@@ -185,7 +185,7 @@ static char *get_option_value(char *arg, int argc, char **argv, int *optind) {
     return value;
 }
 
-int main(int argc, char **argv) {
+int xmain(int argc, char **argv) {
     TJSRuntime *qrt = NULL;
     JSContext *ctx = NULL;
     TJSRunOptions runOptions;
@@ -344,3 +344,75 @@ exit:
     }
     return exit_code;
 }
+
+TJSRuntime *qrt = NULL;
+extern JSModuleDef *js_init_module_uv(JSContext *ctx, const char *name) ;
+extern void uv__stop(uv_async_t *handle) ;
+
+int tjs_init(JSContext* ctx) {
+    TJSRunOptions runOptions;
+    TJS_DefaultOptions(&runOptions);
+
+    qrt = calloc(1, sizeof(*qrt));
+    memcpy(&qrt->options, &runOptions, sizeof(runOptions));
+
+    qrt->rt = JS_GetRuntime(ctx);
+    qrt->ctx = ctx;
+    qrt->is_worker = false;
+
+    CHECK_EQ(uv_loop_init(&qrt->loop), 0);
+
+    /* handle which runs the job queue */
+    CHECK_EQ(uv_prepare_init(&qrt->loop, &qrt->jobs.prepare), 0);
+    qrt->jobs.prepare.data = qrt;
+
+    /* handle to prevent the loop from blocking for i/o when there are pending jobs. */
+    CHECK_EQ(uv_idle_init(&qrt->loop, &qrt->jobs.idle), 0);
+    qrt->jobs.idle.data = qrt;
+
+    /* handle which runs the job queue */
+    CHECK_EQ(uv_check_init(&qrt->loop, &qrt->jobs.check), 0);
+    qrt->jobs.check.data = qrt;
+
+    /* hande for stopping this runtime (also works from another thread) */
+    CHECK_EQ(uv_async_init(&qrt->loop, &qrt->stop, uv__stop), 0);
+    qrt->stop.data = qrt;
+
+    /* loader for ES6 modules */
+//    JS_SetModuleLoaderFunc(qrt->rt, tjs_module_normalizer, tjs_module_loader, qrt);
+
+    /* start bootstrap */
+    qrt->in_bootstrap = true;
+
+    /* core module */
+    js_init_module_uv(qrt->ctx, "@tjs/core");
+
+    tjs__bootstrap_globals(qrt->ctx);
+
+    /* extra builtin modules */
+    tjs__add_builtins(qrt->ctx);
+
+    /* end bootstrap */
+    qrt->in_bootstrap = false;
+
+
+    /* Load some builtin references for easy access */
+    JSValue global_obj = JS_GetGlobalObject(qrt->ctx);
+    qrt->builtins.u8array_ctor = JS_GetPropertyStr(qrt->ctx, global_obj, "Uint8Array");
+    CHECK_EQ(JS_IsUndefined(qrt->builtins.u8array_ctor), 0);
+    JS_FreeValue(qrt->ctx, global_obj);
+
+    return 0;
+}
+
+void tjs_tick() {
+    if(!qrt)return;
+    TJS_Run(qrt);
+}
+
+void tjs_done(){
+    if(!qrt)return;
+    TJS_FreeRuntime(qrt);
+}
+
+

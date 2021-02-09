@@ -88,7 +88,7 @@ class Performance {
 }
 
 function hrtimeMs() {
-    return Number(BigDecimal(tjs.hrtime()) / 1e6m);
+    // return Number(BigDecimal(tjs.hrtime()) / 1e6);
 }
 
 

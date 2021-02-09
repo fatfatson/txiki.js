@@ -109,7 +109,7 @@ JSModuleDef *tjs_module_loader(JSContext *ctx, const char *module_name, void *op
 char *tjs_module_normalizer(JSContext *ctx, const char *base_name, const char *name, void *opaque);
 
 JSModuleDef *js_init_module_std(JSContext *ctx, const char *module_name);
-int js_module_set_import_meta(JSContext *ctx, JSValueConst func_val, JS_BOOL use_realpath, JS_BOOL is_main);
+int tjs_module_set_import_meta(JSContext *ctx, JSValueConst func_val, JS_BOOL use_realpath, JS_BOOL is_main);
 
 JSValue tjs__get_args(JSContext *ctx);
 

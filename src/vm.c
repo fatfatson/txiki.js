@@ -141,7 +141,7 @@ static void tjs__promise_rejection_tracker(JSContext *ctx,
     }
 }
 
-static void uv__stop(uv_async_t *handle) {
+void uv__stop(uv_async_t *handle) {
     TJSRuntime *qrt = handle->data;
     CHECK_NOT_NULL(qrt);
 
@@ -191,8 +191,8 @@ TJSRuntime *TJS_NewRuntimeInternal(bool is_worker, TJSRunOptions *options) {
     JS_SetMaxStackSize(qrt->rt, options->stack_size);
 
     /* Enable BigFloat and BigDecimal */
-    JS_AddIntrinsicBigFloat(qrt->ctx);
-    JS_AddIntrinsicBigDecimal(qrt->ctx);
+//    JS_AddIntrinsicBigFloat(qrt->ctx);
+//    JS_AddIntrinsicBigDecimal(qrt->ctx);
 
     qrt->is_worker = is_worker;
 
@@ -257,8 +257,8 @@ void TJS_FreeRuntime(TJSRuntime *qrt) {
 
     JS_FreeValue(qrt->ctx, qrt->builtins.u8array_ctor);
 
-    JS_FreeContext(qrt->ctx);
-    JS_FreeRuntime(qrt->rt);
+//    JS_FreeContext(qrt->ctx);
+//    JS_FreeRuntime(qrt->rt);
 
     /* Destroy CURLM hande. */
 #ifdef TJS_HAVE_CURL
@@ -275,12 +275,14 @@ void TJS_FreeRuntime(TJSRuntime *qrt) {
 
     /* Cleanup loop. All handles should be closed. */
     int closed = 0;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 100; i++) {
         if (uv_loop_close(&qrt->loop) == 0) {
             closed = 1;
             break;
         }
         uv_run(&qrt->loop, UV_RUN_NOWAIT);
+        uv_sleep(25);
+        printf("waiting uv_loop_close %d\n",i);
     }
 #ifdef DEBUG
     if (!closed)
@@ -302,8 +304,10 @@ JSContext *TJS_GetJSContext(TJSRuntime *qrt) {
     return qrt->ctx;
 }
 
+extern TJSRuntime *qrt ;
 TJSRuntime *TJS_GetRuntime(JSContext *ctx) {
-    return JS_GetContextOpaque(ctx);
+//    return JS_GetContextOpaque(ctx);
+    return qrt;
 }
 
 static void uv__idle_cb(uv_idle_t *handle) {
@@ -361,7 +365,7 @@ void TJS_Run(TJSRuntime *qrt) {
 
     uv__maybe_idle(qrt);
 
-    uv_run(&qrt->loop, UV_RUN_DEFAULT);
+    uv_run(&qrt->loop, UV_RUN_NOWAIT);
 }
 
 void TJS_Stop(TJSRuntime *qrt) {
@@ -438,7 +442,7 @@ JSValue TJS_EvalFile(JSContext *ctx, const char *filename, int flags, bool is_ma
                       override_filename != NULL ? override_filename : filename,
                       eval_flags | JS_EVAL_FLAG_COMPILE_ONLY);
         if (!JS_IsException(ret)) {
-            js_module_set_import_meta(ctx, ret, TRUE, is_main);
+            tjs_module_set_import_meta(ctx, ret, TRUE, is_main);
             ret = JS_EvalFunction(ctx, ret);
         }
     } else {

@@ -293,7 +293,7 @@ static void compile_file(JSContext *ctx, FILE *fo, const char *filename, int mod
 
 
 void help(void) {
-    printf("QuickJS Compiler version " QJS_VERSION_STR "\n"
+    printf("QuickJS Compiler version " "\n"
            "usage: qjsc [options] [files]\n"
            "\n"
            "options are:\n"
@@ -358,8 +358,8 @@ int main(int argc, char **argv) {
     ctx = JS_NewContext(rt);
 
     /* Enable BigFloat and BigDecimal */
-    JS_AddIntrinsicBigFloat(ctx);
-    JS_AddIntrinsicBigDecimal(ctx);
+//    JS_AddIntrinsicBigFloat(ctx);
+//    JS_AddIntrinsicBigDecimal(ctx);
 
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, jsc_module_loader, NULL);
