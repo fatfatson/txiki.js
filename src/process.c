@@ -26,7 +26,9 @@
 #include "utils.h"
 
 #include <string.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 
 static JSClassID tjs_process_class_id;

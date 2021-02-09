@@ -897,10 +897,12 @@ static const JSCFunctionListEntry tjs_fs_funcs[] = {
     TJS_CONST(UV_FS_COPYFILE_FICLONE),
     TJS_CONST(UV_FS_COPYFILE_FICLONE_FORCE),
     TJS_CONST(S_IFMT),
+#ifndef _MSC_VER
     TJS_CONST(S_IFIFO),
+    TJS_CONST(S_IFBLK),
+#endif
     TJS_CONST(S_IFCHR),
     TJS_CONST(S_IFDIR),
-    TJS_CONST(S_IFBLK),
     TJS_CONST(S_IFREG),
 #ifdef S_IFSOCK
     TJS_CONST(S_IFSOCK),

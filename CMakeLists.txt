@@ -34,7 +34,10 @@ macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
 endmacro()
 
 
-include(${PROJECT_SOURCE_DIR}/src/js/CMakeLists.txt)
+if(OSX)
+    include(${PROJECT_SOURCE_DIR}/src/js/CMakeLists.txt)
+endif()
+
 #add_subdirectory(deps/quickjs EXCLUDE_FROM_ALL)
 
 option(libuv_buildtests "" OFF)
@@ -93,7 +96,7 @@ add_library(tjs
     src/wasm.c
     src/worker.c
     src/xhr.c
-    ${CMAKE_CURRENT_BINARY_DIR}/js.c
+#    ${CMAKE_CURRENT_BINARY_DIR}/js.c
 #    ../deps/quickjs/src/cutils.c
 )
 
@@ -125,4 +128,7 @@ if (NOT DISABLE_WASM)
     target_link_libraries(tjs m3)
 endif()
 
-target_link_libraries(tjs uv_a m)
+target_link_libraries(tjs uv_a)
+if(NOT WIN32)
+    target_link_libraries(tjs m)
+endif()

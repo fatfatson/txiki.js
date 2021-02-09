@@ -27,6 +27,7 @@
 #include "private.h"
 #include "tjs.h"
 #include "version.h"
+#include <quickjs/list.h>
 
 #include <stdarg.h>
 #include <stdlib.h>

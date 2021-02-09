@@ -26,6 +26,8 @@
 #define TJS_UTILS_H
 
 #include <quickjs.h>
+#include <quickjs-libc.h>
+#include <cutils.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <uv.h>

@@ -28,7 +28,6 @@
 
 #include "utils.h"
 
-#include <quickjs.h>
 #include <stdbool.h>
 
 typedef struct TJSRuntime TJSRuntime;

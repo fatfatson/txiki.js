@@ -25,12 +25,11 @@
 #ifndef TJS_PRIVATE_H
 #define TJS_PRIVATE_H
 
-#include "../deps/quickjs/src/cutils.h"
-#include "../deps/quickjs/src/list.h"
+//#include "../deps/quickjs/src/cutils.h"
+//#include "../deps/quickjs/src/list.h"
 #include "tjs.h"
 #include "wasm.h"
 
-#include <quickjs.h>
 #include <stdbool.h>
 #include <uv.h>
 
