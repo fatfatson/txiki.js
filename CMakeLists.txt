@@ -16,8 +16,8 @@ set(TJS__VERSION_MINOR 0)
 set(TJS__VERSION_PATCH 0)
 set(TJS__VERSION_SUFFIX "-alpha")
 configure_file(
-    "${CMAKE_SOURCE_DIR}/src/version.h.in"
-    "${CMAKE_SOURCE_DIR}/src/version.h"
+    "${PROJECT_SOURCE_DIR}/src/version.h.in"
+    "${PROJECT_SOURCE_DIR}/src/version.h"
 )
 
 
@@ -34,8 +34,8 @@ macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
 endmacro()
 
 
-include(${CMAKE_SOURCE_DIR}/src/js/CMakeLists.txt)
-add_subdirectory(deps/quickjs EXCLUDE_FROM_ALL)
+include(${PROJECT_SOURCE_DIR}/src/js/CMakeLists.txt)
+#add_subdirectory(deps/quickjs EXCLUDE_FROM_ALL)
 
 option(libuv_buildtests "" OFF)
 add_subdirectory(deps/libuv EXCLUDE_FROM_ALL)
@@ -70,7 +70,9 @@ if(NOT DISABLE_CURL)
     endif()
 endif()
 
-add_executable(tjs
+#add_executable(tjs
+add_library(tjs
+    STATIC
     src/bootstrap.c
     src/cli.c
     src/curl-utils.c
@@ -92,7 +94,7 @@ add_executable(tjs
     src/worker.c
     src/xhr.c
     ${CMAKE_CURRENT_BINARY_DIR}/js.c
-    ../deps/quickjs/src/cutils.c
+#    ../deps/quickjs/src/cutils.c
 )
 
 set_target_properties(tjs PROPERTIES
@@ -123,4 +125,4 @@ if (NOT DISABLE_WASM)
     target_link_libraries(tjs m3)
 endif()
 
-target_link_libraries(tjs qjs uv_a m)
+target_link_libraries(tjs uv_a m)

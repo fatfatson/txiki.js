@@ -1,9 +1,9 @@
 add_executable(qjsc
     src/qjsc.c
 )
-target_link_libraries(qjsc qjs m)
+target_link_libraries(qjsc quickjs m)
 
-set(JS_PATH ${CMAKE_SOURCE_DIR}/src/js)
+set(JS_PATH ${PROJECT_SOURCE_DIR}/src/js)
 set(js_files
     ${JS_PATH}/abort-controller.js
     ${JS_PATH}/bootstrap.js
