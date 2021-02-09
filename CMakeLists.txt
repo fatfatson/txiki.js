@@ -93,7 +93,8 @@ add_library(tjs
     src/wasm.c
     src/worker.c
     src/xhr.c
-    ${CMAKE_CURRENT_BINARY_DIR}/js.c
+    src/prebuilt-js.c
+#    ${CMAKE_CURRENT_BINARY_DIR}/js.c
 #    ../deps/quickjs/src/cutils.c
 )
 

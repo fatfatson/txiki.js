@@ -36,3 +36,13 @@ add_custom_command(
     OUTPUT
         ${CMAKE_CURRENT_BINARY_DIR}/js.c
 )
+
+add_custom_target(
+    tjs-prebuilt
+        ${CUSTOM_QJSC}
+        -o ${PROJECT_SOURCE_DIR}/src/prebuilt-js.c
+        -m ${js_files}
+    DEPENDS
+        ${CUSTOM_QJSC}
+        ${js_files}
+)
