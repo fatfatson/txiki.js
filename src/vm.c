@@ -248,6 +248,16 @@ TJSRuntime *TJS_NewRuntimeInternal(bool is_worker, TJSRunOptions *options) {
     return qrt;
 }
 
+void on_uv_close(uv_handle_t* handle,void* arg)
+{
+    if (handle != NULL && !uv_is_closing(handle))
+    {
+        uv_close(handle,handle->close_cb);
+        if(handle->data){
+        }
+    }
+}
+
 void TJS_FreeRuntime(TJSRuntime *qrt) {
     /* Close all loop handles. */
     uv_close((uv_handle_t *) &qrt->jobs.prepare, NULL);
@@ -272,6 +282,9 @@ void TJS_FreeRuntime(TJSRuntime *qrt) {
 #ifdef TJS_HAVE_WASM
     m3_FreeEnvironment(qrt->wasm_ctx.env);
 #endif
+
+    uv_stop(&qrt->loop);
+    uv_walk(&qrt->loop,on_uv_close,NULL);
 
     /* Cleanup loop. All handles should be closed. */
     int closed = 0;

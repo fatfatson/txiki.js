@@ -75,6 +75,10 @@ static TJSStream *tjs_pipe_get(JSContext *ctx, JSValueConst obj);
 static void uv__stream_close_cb(uv_handle_t *handle) {
     TJSStream *s = handle->data;
     CHECK_NOT_NULL(s);
+    JS_FreeValue(s->ctx, s->read.result.rfuncs[0]);
+    JS_FreeValue(s->ctx, s->read.result.rfuncs[1]);
+    JS_FreeValue(s->ctx, s->accept.result.rfuncs[0]);
+    JS_FreeValue(s->ctx, s->accept.result.rfuncs[1]);
     s->closed = 1;
     if (s->finalized)
         free(s);
@@ -452,6 +456,7 @@ static JSValue tjs_new_tcp(JSContext *ctx, int af) {
         return JS_ThrowInternalError(ctx, "couldn't initialize TCP handle");
     }
 
+    s->h.tcp.close_cb=uv__stream_close_cb;
     return tjs_init_stream(ctx, obj, s);
 }
 
